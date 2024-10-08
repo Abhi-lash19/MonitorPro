@@ -1,7 +1,5 @@
 # MonitorPro
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
 MonitorPro is a real-time system monitoring dashboard that displays vital system metrics such as CPU utilization, memory usage, and battery status in a visually appealing way. It uses Flask for the backend, HTML and JavaScript for the frontend, and integrates with Flask-SocketIO for real-time data updates.
 
 ## Project Structure
@@ -67,6 +65,3 @@ MonitorPro/
 - **psutil**: Fetches system metrics.
 - **Chart.js**: For rendering charts in the browser.
 - **Flask**: Backend framework for building the API and server.
-
-## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
