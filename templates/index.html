@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.3/dist/tailwind.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <title>System Dashboard</title>
+    <style>
+        .dark {
+            --bg-color: #1a202c;
+            --text-color: #5da8f7;
+            --nav-bg: #2d3748;
+            --nav-link-color: #e2e8f0;
+        }
+
+        .light {
+            --bg-color: #f7fafc;
+            --text-color: #2d3748;
+            --nav-bg: white;
+            --nav-link-color: #2d3748;
+        }
+
+        /* Navigation Bar Styles */
+        .navbar {
+            background-color: #007bff; /* Navbar background color */
+            padding: 10px 20px;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow:0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar h2 {
+            font-family: 'Dancing Script', cursive;
+            color: var(--nav-link-color);
+            font-size: 2.5rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .nav-links {
+            list-style-type: none;
+            margin-right: 40px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links li {
+            display: inline;
+            margin-left: 20px;
+        }
+
+        .nav-links a {
+            color: var(--nav-link-color);
+            font-weight: bold;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #e5ff00; /* Hover color effect */
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            padding-top: 70px; 
+        }
+
+        .dark .bg-white {
+            background-color: #1a202c;
+        }
+
+        .dark .text-white {
+            color: #e2e8f0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .dark .container {
+            background-color: #2d3748;
+        }
+
+        .chart-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 400px;
+            margin-top: 50px;
+            margin-left: 20px;
+        }
+
+        .chart {
+            background-color: #1a202c;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .details {
+            border-left: 20px solid var(--text-color);
+            border-top: 20px solid var(--text-color);
+            padding-left: 14px;
+        }
+
+        .detail-box {
+            background-color: var(--bg-color);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 12px 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .detail-box h4 {
+            color: var(--text-color);
+            margin-bottom: 10px;
+            font-size: 1.125rem;
+            font-weight: bold;
+        }
+
+        .detail-box ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .detail-box li {
+            margin-bottom: 6px;
+            color: var(--text-color);
+        }
+
+        .detail-box p {
+            margin: 5px 0;
+        }
+
+        .layout-container {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+
+        .cpu-box, .memory-box {
+            width: 30%;
+            padding-top: 50px;
+            margin-top: 20px;
+        }
+
+        .memory-box {
+            margin-left: 60px;
+        }
+
+        canvas {
+            max-width: 100%;
+            height: auto;
+        }
+        .battery-box {
+            width: 100%;
+        }
+
+        .dark .data-box li {
+            color: #cbd5e0;
+        }
+
+        @media (max-width: 768px) {
+            .layout-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .cpu-box, .memory-box, .battery-box {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+
+            .chart-container {
+                height: 200px; /* Adjust for smaller screens */
+            }
+        }
+    </style>
+</head>
+
+<body class="light">
+    <!-- Top Navigation Bar -->
+    <nav class="navbar">
+        <h2>MonitorPro</h2>
+        <ul class="nav-links">
+            <li class="text-white cursor-pointer hover:underline"><a href="/cpu">CPU</a></li>
+            <li class="text-white cursor-pointer hover:underline"><a href="/memory">Memory</a></li>
+            <li class="text-white cursor-pointer hover:underline"><a href="/battery">Battery</a></li>
+        </ul>
+        <button onclick="toggleTheme()" class="text-gray-600 hover:text-gray-900">
+            <i class="fas fa-adjust text-2xl"></i>
+        </button>
+    </nav>
+
+    <!-- Main Content Area -->
+    <div class="container">
+        <!-- Chart and CPU/Memory Layout -->
+        <div class="layout-container">
+            <div class="cpu-box data-box">
+                <!-- <div class="detail-box"> -->
+                    <h4 id="cpu">CPU Data</h4>
+                    <ul>
+                        <li>Utilization: <span id="cpu-utilization">0%</span></li>
+                        <li>Processes: <span id="cpu-processes">0</span></li>
+                        <li>Core Usage:
+                            <ul id="cpu-core-usage" class="list-disc pl-5"></ul>
+                        </li>
+                    </ul>
+                <!-- </div> -->
+            </div>
+
+            <div class="chart-container">
+                <div class="chart"><canvas id="radarChart" width="400" height="200"></canvas></div>
+            </div>
+
+            <div class="memory-box data-box">
+                <!-- <div class="detail-box"> -->
+                <h4 id="memory">Memory Data</h4>
+                <ul>
+                    <li>Total Memory: <span id="memory-total">0 GB</span></li>
+                    <li>Used Memory: <span id="memory-used">0 GB</span></li>
+                    <li>Free Memory: <span id="memory-free">0 GB</span></li>
+                </ul>
+                <!-- </div> -->
+            </div>
+        </div>
+
+        <!-- Battery Box Below the Chart -->
+        <div class="battery-box data-box">
+            <!-- <div class="detail-box"> -->
+                <h4 id="battery">Battery Data</h4>
+                <ul>
+                    <li>Percentage: <span id="battery-percentage">0%</span></li>
+                    <li>Power Plugged: <span id="battery-plugged">False</span></li>
+                    <li>Time Remaining: <span id="battery-time-remaining">N/A</span></li>
+                </ul>
+            <!-- </div> -->
+        </div>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            document.body.classList.toggle('dark');
+            document.body.classList.toggle('light');
+        }
+
+        // Initialize Radar Chart
+        const ctx = document.getElementById('radarChart').getContext('2d');
+        const radarChart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['CPU Utilization', 'Memory Used', 'Battery Percentage'],
+                datasets: [{
+                    label: 'System Metrics',
+                    data: [0, 0, 0],
+                    borderColor: 'rgba(255, 255, 255, 1)', // Line color
+                    backgroundColor: 'rgba(255, 255, 255, 0.2)', // Fill color
+                    pointBackgroundColor: 'rgba(255, 255, 255, 1)', // Point color
+                    pointBorderColor: '#fff', // Point border color
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    r: {
+                        angleLines: {
+                            color: 'rgba(255, 255, 255, 0.5)', // Angle lines color
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.2)', // Grid color
+                        },
+                        ticks: {
+                            color: 'white', // Tick color
+                        },
+                        pointLabels: {
+                            color: 'white', // Point label color
+                        }
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        color: 'white'
+                    },
+                    legend: {
+                        labels: {
+                            color: 'white' 
+                        }
+                    }
+                }
+            }
+        });
+
+        // Mock socket.on for demonstration purposes
+        const socket = {
+            on: (event, callback) => {
+                // Simulate data every 2 seconds
+                setInterval(() => {
+                    const data = {
+                        cpu: {
+                            utilization: Math.floor(Math.random() * 101),
+                            processes: Math.floor(Math.random() * 300),
+                            core_usage: [Math.floor(Math.random() * 101), Math.floor(Math.random() * 101)]
+                        },
+                        memory: { total: 16, used: Math.floor(Math.random() * 16), free: 16 - Math.floor(Math.random() * 16) },
+                        battery: { percentage: Math.floor(Math.random() * 101), power_plugged: Math.random() > 0.5, time_remaining: Math.floor(Math.random() * 7200) }
+                    };
+                    callback(data);
+                }, 2000);
+            },
+        };
+
+        // Define update functions for detailed data
+        function updateCPU(cpuData) {
+            const cpuValue = cpuData.utilization;
+            const processes = cpuData.processes;
+            const coreUsage = cpuData.core_usage;
+
+            // Update the radar chart and detailed info
+            radarChart.data.datasets[0].data[0] = cpuValue;
+            radarChart.update();
+
+            document.getElementById('cpu-utilization').innerText = `${cpuValue}%`;
+            document.getElementById('cpu-processes').innerText = `${processes}`;
+            const coreUsageList = document.getElementById('cpu-core-usage');
+            coreUsageList.innerHTML = '';
+            coreUsage.forEach((usage, index) => {
+                const li = document.createElement('li');
+                li.innerText = `Core ${index + 1}: ${usage}%`;
+                coreUsageList.appendChild(li);
+            });
+        }
+
+        function updateMemory(memoryData) {
+            const totalMemory = memoryData.total;
+            const usedMemory = memoryData.used;
+            const freeMemory = totalMemory - usedMemory;
+
+            const memoryUsedPercent = (usedMemory / totalMemory) * 100;
+            radarChart.data.datasets[0].data[1] = memoryUsedPercent;
+            radarChart.update();
+
+            document.getElementById('memory-total').innerText = `${totalMemory} GB`;
+            document.getElementById('memory-used').innerText = `${usedMemory} GB`;
+            document.getElementById('memory-free').innerText = `${freeMemory} GB`;
+        }
+
+        function updateBattery(batteryData) {
+            const batteryValue = batteryData.percentage;
+            const powerPlugged = batteryData.power_plugged;
+            const timeRemaining = batteryData.time_remaining;
+
+            radarChart.data.datasets[0].data[2] = batteryValue;
+            radarChart.update();
+
+            document.getElementById('battery-percentage').innerText = `${batteryValue}%`;
+            document.getElementById('battery-plugged').innerText = powerPlugged ? 'True' : 'False';
+            document.getElementById('battery-time-remaining').innerText = powerPlugged ? 'N/A' : `${timeRemaining} seconds`;
+        }
+
+        // Set up socket listeners
+        socket.on('update', data => {
+            updateCPU(data.cpu);
+            updateMemory(data.memory);
+            updateBattery(data.battery);
+        });
+
+    </script>
+</body>
+
+</html>
