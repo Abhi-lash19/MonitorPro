@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battery Monitoring</title>
+    <script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
+    <style>
+        body {
+            transition: background-color 0.3s, color 0.3s;
+            background-color: #f7fafc;
+            color: #2d3748;
+            font-family: Arial, sans-serif;
+        }
+        .dark {
+            background-color: #1a202c;
+            color: #0a9954;
+        }
+        .button-container {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        .btn {
+            background-color: DodgerBlue;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        .btn:hover {
+            background-color: RoyalBlue;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        .details {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            background-color: #f7fafc;
+        }
+    </style>
+</head>
+<body>
+    <div class="button-container">
+        <button class="btn" onclick="location.href='/'">Home</button>
+        <button class="btn" id="themeToggle">Toggle Theme</button>
+    </div>
+    <div class="container">
+        <h1>Battery Monitoring</h1>
+        <div class="details">
+            <p>Battery Percentage: <span id="percentage"></span>%</p>
+            <p>Power Plugged: <span id="powerPlugged"></span></p>
+            <p>Time Remaining: <span id="timeRemaining"></span> seconds</p>
+        </div>
+    </div>
+    <script>
+        const socket = io();
+
+        socket.on('battery_update', (data) => {
+            document.getElementById('percentage').innerText = data.percentage;
+            document.getElementById('powerPlugged').innerText = data.power_plugged ? 'Yes' : 'No';
+            document.getElementById('timeRemaining').innerText = data.time_remaining != null ? data.time_remaining : 'N/A';
+        });
+
+        document.getElementById('themeToggle').onclick = function() {
+            document.body.classList.toggle('dark');
+        };
+    </script>
+</body>
+</html>
