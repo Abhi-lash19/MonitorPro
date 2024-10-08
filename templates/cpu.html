@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPU Monitoring</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
+    <style>
+        body {
+            transition: background-color 0.3s, color 0.3s;
+            background-color: #f7fafc; /* Light background */
+            color: #2d3748; /* Dark text */
+            font-family: Arial, sans-serif;
+        }
+        .dark {
+            background-color: #1a202c;
+            color: #074281;
+        }
+        .button-container {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        .btn {
+            background-color: DodgerBlue;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        .btn:hover {
+            background-color: RoyalBlue;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        .chart-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .details {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            background-color: #f7fafc;
+        }
+    </style>
+</head>
+<body>
+    <div class="button-container">
+        <button class="btn" onclick="location.href='/'">Home</button>
+        <button class="btn" id="themeToggle">Toggle Theme</button>
+    </div>
+    <div class="container">
+        <h1>CPU Monitoring</h1>
+        <div class="chart-container">
+            <canvas id="cpuChart" width="400" height="200"></canvas>
+        </div>
+        <div class="details">
+            <p>Load Average (1, 5, 15 min): <span id="loadAverage"></span></p>
+            <p>Utilization: <span id="utilization"></span>%</p>
+            <p>Processes: <span id="processes"></span></p>
+            <p>Core Temperature: <span id="temperature"></span> °C</p>
+            <p>CPU Model: <span id="modelName"></span></p>
+            <p>Context Switches: <span id="contextSwitches"></span></p>
+            <p>Interrupts: <span id="interrupts"></span></p>
+        </div>
+    </div>
+    <script>
+        const socket = io();
+
+        const ctx = document.getElementById('cpuChart').getContext('2d');
+        const cpuChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'CPU Utilization',
+                    data: [],
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1,
+                    fill: false,
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Time'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Utilization (%)'
+                        },
+                        min: 0,
+                        max: 100
+                    }
+                }
+            }
+        });
+
+        socket.on('cpu_update', (data) => {
+            // Update chart data
+            const now = new Date();
+            const time = now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds();
+            cpuChart.data.labels.push(time);
+            cpuChart.data.datasets[0].data.push(data.utilization);
+
+            // Keep the last 20 data points
+            if (cpuChart.data.labels.length > 20) {
+                cpuChart.data.labels.shift();
+                cpuChart.data.datasets[0].data.shift();
+            }
+
+            cpuChart.update();
+
+            // Update other data
+            document.getElementById('loadAverage').innerText = data.load_average.join(', ');
+            document.getElementById('utilization').innerText = data.utilization.toFixed(2);
+            document.getElementById('processes').innerText = data.processes;
+            document.getElementById('temperature').innerText = data.temperature.toFixed(2);
+            document.getElementById('modelName').innerText = data.model_name;
+            document.getElementById('contextSwitches').innerText = data.context_switches;
+            document.getElementById('interrupts').innerText = data.interrupts;
+        });
+
+        document.getElementById('themeToggle').onclick = function() {
+            document.body.classList.toggle('dark');
+        };
+    </script>
+</body>
+</html>
