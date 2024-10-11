@@ -1,7 +1,3 @@
-Here's an updated version of your README file with a section on issues faced during the project and details about using Amazon ECR and EKS:
-
----
-
 # MonitorPro
 
 MonitorPro is a real-time system monitoring dashboard that displays vital system metrics such as CPU utilization, memory usage, and battery status in a visually appealing way. It uses Flask for the backend, HTML and JavaScript for the frontend, and integrates with Flask-SocketIO for real-time data updates.
@@ -96,6 +92,8 @@ This error occurs when kubectl is trying to connect to a local Kubernetes API se
    - Created a repository in Amazon Elastic Container Registry (ECR) to store the Docker images for the application.
    - Used the `aws ecr get-login-password` command to authenticate Docker with the ECR registry.
    - Built the Docker image locally and pushed it to the ECR repository.
+
+
 
 3. **EKS Setup**: The project is deployed on Amazon Elastic Kubernetes Service (EKS). The eks.py script handles interactions with EKS, including cluster management and pod deployment.
    
