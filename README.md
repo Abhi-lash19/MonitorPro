@@ -101,3 +101,39 @@ This error occurs when kubectl is trying to connect to a local Kubernetes API se
    - Configured a node group with appropriate instance types and autoscaling policies.
    - Deployed the application by creating Kubernetes deployment and service manifests, ensuring proper networking and security configurations.
 
+
+## Screenshots
+
+Here are some important screenshots taken during the development of the MonitorPro project:
+
+1. **Cluster Information**  
+   ![Cluster Info](screenshots/cluster_info.png)  
+   Output of `aws eks --region ap-south-1 describe-cluster --name monitorpro-cluster`
+
+2. **Docker Build**  
+   ![Docker Build](screenshots/docker_build.png)  
+   Output of `docker build -t monitorpro .`
+
+3. **ECR Image**  
+   ![ECR Image](screenshots/ecr_image.png)  
+   AWS Console image of the ECR image.
+
+4. **ECR Repository**  
+   ![ECR Repo](screenshots/ecr_repo.png)  
+   AWS Console image of the ECR repository.
+
+5. **EKS Cluster**  
+   ![EKS Cluster](screenshots/eks_cluster.png)  
+   AWS Console image of the EKS cluster.
+
+6. **Pod Creation**  
+   ![Pod Creation](screenshots/pod_creation.png)  
+   Successful output of `kubectl get pods -n default -w` and `kubectl get svc -n default`, and the command `kubectl port-forward svc/monitorpro-service 5000:5000`.
+
+7. **Pod Description**  
+   ![Pod Description](screenshots/pod_description.png)  
+   Output of `kubectl describe pods monitorpro-7984c47cb9-j7vsm -n default`.
+
+8. **Build**  
+   ![Build](screenshots/build.png)  
+   Docker Desktop image of my MonitorPro.
